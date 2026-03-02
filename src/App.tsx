@@ -377,18 +377,9 @@ const DiningPage = () => {
   const [orderSuccess, setOrderSuccess] = useState<string | null>(null);
 
   const handleBooking = async (res: Restaurant) => {
-    const res_api = await fetch('/api/orders', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        productName: res.name,
-        phone: '13800138000',
-        quantity: 1,
-        totalPrice: 100
-      })
-    });
-    const data = await res_api.json();
-    setOrderSuccess(data.code);
+    // Mock local order generation
+    const mockCode = Math.random().toString(36).substring(2, 10).toUpperCase();
+    setOrderSuccess(mockCode);
   };
 
   return (
@@ -526,11 +517,7 @@ const ComplaintPage = ({ onBack }: { onBack: () => void }) => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    await fetch('/api/complaints', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
-    });
+    // Mock local submission
     setSubmitted(true);
   };
 
