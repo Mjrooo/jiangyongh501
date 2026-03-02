@@ -1,0 +1,5 @@
+{
+  "name": "江永全域旅游",
+  "description": "江永全域旅游官方H5，提供景点介绍、游玩攻略、旅游产品及餐饮预订服务。",
+  "requestFramePermissions": ["geolocation"]
+}
