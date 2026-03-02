@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent, type ReactNode } from 'react';
+import { useState, type FormEvent, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Home as HomeIcon, 
@@ -45,14 +45,14 @@ const SectionHeader = ({ title, subtitle, action }: { title: string; subtitle?: 
 // --- Pages ---
 
 const HomePage = ({ setTab }: any) => {
-  const [weatherData, setWeatherData] = useState<any[]>([]);
-  const [stats, setStats] = useState({ todayVisitors: 0, totalVisitors: 0 });
+  const [weatherData] = useState([
+    { name: "女书生态博物馆", weather: "晴 22℃", flow: "舒适", parking: "25/100" },
+    { name: "上甘棠景区", weather: "多云 21℃", flow: "一般", parking: "12/80" },
+    { name: "千家峒景区", weather: "晴 23℃", flow: "舒适", parking: "45/150" },
+    { name: "勾蓝瑶寨", weather: "晴 22℃", flow: "拥挤", parking: "2/60" },
+  ]);
+  const [stats] = useState({ todayVisitors: 1284, totalVisitors: 45293 });
   const [showVideo, setShowVideo] = useState(false);
-
-  useEffect(() => {
-    fetch('/api/weather').then(res => res.json()).then(setWeatherData);
-    fetch('/api/stats').then(res => res.json()).then(setStats);
-  }, []);
 
   return (
     <div className="pb-24 bg-white">
