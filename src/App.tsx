@@ -17,7 +17,7 @@ import {
   X,
   Star
 } from 'lucide-react';
-import { SCENIC_SPOTS, ROUTES, PRODUCTS, RESTAURANTS, ENCYCLOPEDIA, GUIDES } from './constants';
+import { SCENIC_SPOTS, ROUTES, PRODUCTS, RESTAURANTS, ENCYCLOPEDIA, GUIDES, HISTORY_MODULE } from './constants';
 import { ScenicSpot, Route, Product, Restaurant } from './types';
 
 // --- Components ---
@@ -129,11 +129,13 @@ const HomePage = ({ setTab }: any) => {
             </div>
           </button>
           <button 
-            onClick={() => setTab('products')}
+            onClick={() => setTab('history')}
             className="bg-zinc-100 p-5 rounded-[2rem] text-zinc-900 flex flex-col justify-between h-32 border border-zinc-200"
           >
-            <ShoppingBag size={24} className="text-emerald-600" />
-            <div className="font-bold text-xs">网上<br/>订购</div>
+            <div className="flex flex-col justify-between h-full">
+              <MapIcon size={24} className="text-emerald-600" />
+              <div className="font-bold text-xs">江永<br/>历史</div>
+            </div>
           </button>
         </div>
       </div>
@@ -242,6 +244,7 @@ const HomePage = ({ setTab }: any) => {
 
 const ExplorePage = () => {
   const [filter, setFilter] = useState<'spots' | 'routes'>('spots');
+  const [selectedItem, setSelectedItem] = useState<any>(null);
 
   return (
     <div className="pb-20">
@@ -271,8 +274,14 @@ const ExplorePage = () => {
                 “三千文化”
               </h3>
               {SCENIC_SPOTS.filter(s => s.category === '3000').map(spot => (
-                <div key={spot.id} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-zinc-100">
-                  <img src={spot.image} alt={spot.name} className="w-full h-48 object-cover" referrerPolicy="no-referrer" />
+                <div 
+                  key={spot.id} 
+                  onClick={() => setSelectedItem(spot)}
+                  className="bg-white rounded-2xl overflow-hidden shadow-sm border border-zinc-100 cursor-pointer group"
+                >
+                  <div className="relative h-48 overflow-hidden">
+                    <img src={spot.image} alt={spot.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" referrerPolicy="no-referrer" />
+                  </div>
                   <div className="p-4">
                     <h4 className="font-bold text-lg">{spot.name}</h4>
                     <p className="text-sm text-zinc-500 mt-1">{spot.description}</p>
@@ -286,8 +295,14 @@ const ExplorePage = () => {
                 勾蓝瑶寨
               </h3>
               {SCENIC_SPOTS.filter(s => s.category === 'goulan').map(spot => (
-                <div key={spot.id} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-zinc-100">
-                  <img src={spot.image} alt={spot.name} className="w-full h-48 object-cover" referrerPolicy="no-referrer" />
+                <div 
+                  key={spot.id} 
+                  onClick={() => setSelectedItem(spot)}
+                  className="bg-white rounded-2xl overflow-hidden shadow-sm border border-zinc-100 cursor-pointer group"
+                >
+                  <div className="relative h-48 overflow-hidden">
+                    <img src={spot.image} alt={spot.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" referrerPolicy="no-referrer" />
+                  </div>
                   <div className="p-4">
                     <h4 className="font-bold text-lg">{spot.name}</h4>
                     <p className="text-sm text-zinc-500 mt-1">{spot.description}</p>
@@ -309,8 +324,12 @@ const ExplorePage = () => {
                   {type === 'culture' ? '文化旅游精品线路' : type === 'life' ? '生活旅游精品路线' : '特香农业体验'}
                 </h3>
                 {ROUTES.filter(r => r.type === type).map(route => (
-                  <div key={route.id} className="relative rounded-2xl overflow-hidden h-40 group">
-                    <img src={route.image} alt={route.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                  <div 
+                    key={route.id} 
+                    onClick={() => setSelectedItem(route)}
+                    className="relative rounded-2xl overflow-hidden h-40 group cursor-pointer"
+                  >
+                    <img src={route.image} alt={route.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" referrerPolicy="no-referrer" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-4 flex flex-col justify-end">
                       <h4 className="text-white font-bold">{route.title}</h4>
                       <p className="text-white/70 text-xs mt-1">{route.description}</p>
@@ -322,6 +341,44 @@ const ExplorePage = () => {
           </div>
         )}
       </div>
+
+      {/* Detail Modal */}
+      <AnimatePresence>
+        {selectedItem && (
+          <motion.div 
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            className="fixed inset-0 z-50 bg-white overflow-y-auto"
+          >
+            <div className="relative h-72">
+              <img src={selectedItem.image} alt={selectedItem.name || selectedItem.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+              <button 
+                onClick={() => setSelectedItem(null)}
+                className="absolute top-6 left-6 bg-black/20 backdrop-blur-md text-white p-2 rounded-full"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="p-8">
+              <h2 className="text-2xl font-bold mb-4">{selectedItem.name || selectedItem.title}</h2>
+              <div className="prose prose-sm text-zinc-600 leading-relaxed">
+                <p className="whitespace-pre-wrap">{selectedItem.details || '暂无详细介绍。'}</p>
+              </div>
+              
+              <div className="mt-12 p-6 bg-emerald-50 rounded-3xl border border-emerald-100">
+                <h4 className="font-bold text-emerald-900 mb-2 flex items-center gap-2">
+                  <Info size={16} />
+                  游玩贴士
+                </h4>
+                <p className="text-xs text-emerald-700 leading-relaxed">
+                  建议游玩时间：2-4小时。请注意保护古迹，遵守景区规定。
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
@@ -713,6 +770,38 @@ const BookingGuidePage = ({ onBack }: { onBack: () => void }) => (
   </div>
 );
 
+const HistoryPage = ({ onBack }: { onBack: () => void }) => (
+  <div className="bg-zinc-50 min-h-screen">
+    <div className="bg-zinc-900 text-white p-8 pt-12">
+      <button onClick={onBack} className="mb-8 p-2 bg-white/10 rounded-full"><X size={20} /></button>
+      <h2 className="text-4xl font-bold tracking-tighter mb-2">江永历史</h2>
+      <p className="text-xs opacity-60 uppercase tracking-[0.2em]">Historical Timeline</p>
+    </div>
+    
+    <div className="p-6">
+      <div className="relative pl-8 border-l border-zinc-200 space-y-12">
+        {HISTORY_MODULE.timeline.map((item, i) => (
+          <div key={i} className="relative">
+            <div className="absolute -left-[41px] top-1 w-4 h-4 rounded-full bg-emerald-500 border-4 border-white shadow-sm" />
+            <div className="text-xs font-bold text-emerald-600 mb-1">{item.year}</div>
+            <div className="text-sm text-zinc-800 font-medium leading-relaxed">{item.event}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-16 space-y-6">
+        <h3 className="text-xl font-bold text-zinc-900">历史故事</h3>
+        {HISTORY_MODULE.stories.map((story, i) => (
+          <div key={i} className="bg-white p-6 rounded-[2rem] border border-zinc-100 shadow-sm">
+            <h4 className="font-bold text-emerald-600 mb-3">{story.title}</h4>
+            <p className="text-sm text-zinc-600 leading-relaxed">{story.content}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
 // --- Main App ---
 
 export default function App() {
@@ -728,11 +817,12 @@ export default function App() {
       case 'encyclopedia': return <EncyclopediaPage onBack={() => setActiveTab('home')} />;
       case 'medical': return <MedicalRescuePage onBack={() => setActiveTab('home')} />;
       case 'guide': return <BookingGuidePage onBack={() => setActiveTab('home')} />;
+      case 'history': return <HistoryPage onBack={() => setActiveTab('home')} />;
       default: return <HomePage setTab={setActiveTab} />;
     }
   };
 
-  const showNav = !['complaint', 'encyclopedia', 'medical', 'guide'].includes(activeTab);
+  const showNav = !['complaint', 'encyclopedia', 'medical', 'guide', 'history'].includes(activeTab);
 
   return (
     <div className="min-h-screen bg-zinc-50 font-sans text-zinc-900 max-w-md mx-auto shadow-xl">

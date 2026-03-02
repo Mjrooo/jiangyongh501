@@ -13,6 +13,7 @@ export interface Route {
   description: string;
   image: string;
   type: 'seasonal' | 'agri' | 'culture' | 'life';
+  details?: string;
 }
 
 export interface Product {
