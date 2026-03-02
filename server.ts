@@ -51,13 +51,20 @@ async function startServer() {
   });
 
   app.get("/api/weather", (req, res) => {
-    // Mock weather and scenic spot data
+    // Fixed weather and scenic spot data
     res.json([
       { name: "女书生态博物馆", weather: "晴 22℃", flow: "舒适", parking: "25/100" },
       { name: "上甘棠景区", weather: "多云 21℃", flow: "一般", parking: "12/80" },
       { name: "千家峒景区", weather: "晴 23℃", flow: "舒适", parking: "45/150" },
       { name: "勾蓝瑶寨", weather: "晴 22℃", flow: "拥挤", parking: "2/60" },
     ]);
+  });
+
+  app.get("/api/stats", (req, res) => {
+    res.json({
+      todayVisitors: 1284,
+      totalVisitors: 45293,
+    });
   });
 
   // Vite middleware for development

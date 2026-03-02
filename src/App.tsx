@@ -17,7 +17,7 @@ import {
   X,
   Star
 } from 'lucide-react';
-import { SCENIC_SPOTS, ROUTES, PRODUCTS, RESTAURANTS } from './constants';
+import { SCENIC_SPOTS, ROUTES, PRODUCTS, RESTAURANTS, ENCYCLOPEDIA, GUIDES } from './constants';
 import { ScenicSpot, Route, Product, Restaurant } from './types';
 
 // --- Components ---
@@ -46,10 +46,12 @@ const SectionHeader = ({ title, subtitle, action }: { title: string; subtitle?: 
 
 const HomePage = ({ setTab }: any) => {
   const [weatherData, setWeatherData] = useState<any[]>([]);
+  const [stats, setStats] = useState({ todayVisitors: 0, totalVisitors: 0 });
   const [showVideo, setShowVideo] = useState(false);
 
   useEffect(() => {
     fetch('/api/weather').then(res => res.json()).then(setWeatherData);
+    fetch('/api/stats').then(res => res.json()).then(setStats);
   }, []);
 
   return (
@@ -76,6 +78,19 @@ const HomePage = ({ setTab }: any) => {
           <p className="text-xs opacity-70 max-w-[200px] leading-relaxed">
             中国最具文化品位小城，探索神秘女性文字的发源地。
           </p>
+          
+          {/* Visitor Stats Optimization */}
+          <div className="mt-8 flex gap-6">
+            <div>
+              <div className="text-[10px] opacity-50 uppercase tracking-widest mb-1">Today Visitors</div>
+              <div className="text-xl font-mono font-bold text-emerald-400">{stats.todayVisitors.toLocaleString()}</div>
+            </div>
+            <div className="w-[1px] h-8 bg-white/10 self-end" />
+            <div>
+              <div className="text-[10px] opacity-50 uppercase tracking-widest mb-1">Total Visits</div>
+              <div className="text-xl font-mono font-bold">{stats.totalVisitors.toLocaleString()}</div>
+            </div>
+          </div>
         </div>
 
         <div className="absolute bottom-12 left-6 right-6 flex items-end justify-between">
@@ -104,9 +119,14 @@ const HomePage = ({ setTab }: any) => {
               <div className="font-bold">全域导航</div>
             </div>
           </button>
-          <button className="bg-zinc-900 p-5 rounded-[2rem] text-white flex flex-col justify-between h-32">
-            <Info size={24} className="text-emerald-400" />
-            <div className="font-bold text-xs">江永<br/>百科</div>
+          <button 
+            onClick={() => setTab('encyclopedia')}
+            className="bg-zinc-900 p-5 rounded-[2rem] text-white flex flex-col justify-between h-32"
+          >
+            <div className="flex flex-col justify-between h-full">
+              <Info size={24} className="text-emerald-400" />
+              <div className="font-bold text-xs">江永<br/>百科</div>
+            </div>
           </button>
           <button 
             onClick={() => setTab('products')}
@@ -159,8 +179,8 @@ const HomePage = ({ setTab }: any) => {
         {[
           { icon: Navigation, label: '官网链接', desc: 'Official Site', color: 'text-blue-500' },
           { icon: AlertCircle, label: '在线投诉', desc: 'Complaints', color: 'text-rose-500', action: () => setTab('complaint') },
-          { icon: Phone, label: '医疗救援', desc: 'Emergency', color: 'text-emerald-500', href: 'tel:120' },
-          { icon: Info, label: '预订指南', desc: 'Tutorial', color: 'text-amber-500' },
+          { icon: Phone, label: '医疗救援', desc: 'Emergency', color: 'text-emerald-500', action: () => setTab('medical') },
+          { icon: Info, label: '预订指南', desc: 'Tutorial', color: 'text-amber-500', action: () => setTab('guide') },
         ].map((item, i) => (
           <button 
             key={i} 
@@ -615,6 +635,97 @@ const ComplaintPage = ({ onBack }: { onBack: () => void }) => {
   );
 };
 
+const EncyclopediaPage = ({ onBack }: { onBack: () => void }) => (
+  <div className="bg-white min-h-screen">
+    <div className="relative h-64">
+      <img src="https://picsum.photos/seed/encyclopedia/800/600" alt="Encyclopedia" className="w-full h-full object-cover" />
+      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+        <h2 className="text-3xl font-bold text-white tracking-widest">江永百科</h2>
+      </div>
+      <button onClick={onBack} className="absolute top-6 left-6 bg-white/20 backdrop-blur-md text-white p-2 rounded-full"><X size={20} /></button>
+    </div>
+    <div className="p-6 space-y-8">
+      <section>
+        <h3 className="text-lg font-bold text-emerald-600 mb-3 flex items-center gap-2">
+          <div className="w-1 h-4 bg-emerald-600 rounded-full" />
+          历史沿革
+        </h3>
+        <p className="text-sm text-zinc-600 leading-relaxed">{ENCYCLOPEDIA.history}</p>
+      </section>
+      <section>
+        <h3 className="text-lg font-bold text-emerald-600 mb-3 flex items-center gap-2">
+          <div className="w-1 h-4 bg-emerald-600 rounded-full" />
+          生态环境
+        </h3>
+        <p className="text-sm text-zinc-600 leading-relaxed">{ENCYCLOPEDIA.ecology}</p>
+      </section>
+      <section>
+        <h3 className="text-lg font-bold text-emerald-600 mb-3 flex items-center gap-2">
+          <div className="w-1 h-4 bg-emerald-600 rounded-full" />
+          名优特产
+        </h3>
+        <div className="flex flex-wrap gap-2">
+          {ENCYCLOPEDIA.specialties.map(s => (
+            <span key={s} className="px-3 py-1.5 bg-zinc-100 text-zinc-700 text-xs rounded-full font-medium">{s}</span>
+          ))}
+        </div>
+      </section>
+    </div>
+  </div>
+);
+
+const MedicalRescuePage = ({ onBack }: { onBack: () => void }) => (
+  <div className="p-6 bg-white min-h-screen">
+    <div className="flex items-center gap-4 mb-8">
+      <button onClick={onBack} className="p-2 bg-zinc-100 rounded-full"><X size={20} /></button>
+      <h2 className="text-xl font-bold">医疗救援</h2>
+    </div>
+    <div className="space-y-6">
+      <div className="bg-rose-50 p-6 rounded-[2rem] border border-rose-100">
+        <div className="w-12 h-12 bg-rose-500 text-white rounded-2xl flex items-center justify-center mb-4">
+          <Phone size={24} />
+        </div>
+        <h3 className="text-lg font-bold text-rose-900 mb-1">急救热线</h3>
+        <p className="text-xs text-rose-600 mb-4">24小时全天候医疗紧急救援服务</p>
+        <a href="tel:120" className="inline-block bg-rose-500 text-white px-6 py-3 rounded-xl font-bold text-lg">120</a>
+      </div>
+      <div className="space-y-4">
+        <h3 className="font-bold text-zinc-900">定点医院</h3>
+        {[
+          { name: "江永县人民医院", address: "江永县永明东路", tel: "0746-1234567" },
+          { name: "江永县中医院", address: "江永县永明西路", tel: "0746-7654321" },
+        ].map((h, i) => (
+          <div key={i} className="p-4 bg-zinc-50 rounded-2xl border border-zinc-100">
+            <h4 className="font-bold text-sm mb-1">{h.name}</h4>
+            <p className="text-xs text-zinc-500 mb-2">{h.address}</p>
+            <a href={`tel:${h.tel}`} className="text-xs text-emerald-600 font-bold">{h.tel}</a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+const BookingGuidePage = ({ onBack }: { onBack: () => void }) => (
+  <div className="p-6 bg-white min-h-screen">
+    <div className="flex items-center gap-4 mb-8">
+      <button onClick={onBack} className="p-2 bg-zinc-100 rounded-full"><X size={20} /></button>
+      <h2 className="text-xl font-bold">预订指南</h2>
+    </div>
+    <div className="space-y-6">
+      {GUIDES.map((g, i) => (
+        <div key={i} className="p-6 bg-zinc-50 rounded-[2rem] border border-zinc-100">
+          <h3 className="font-bold text-zinc-900 mb-3 flex items-start gap-3">
+            <span className="w-6 h-6 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-xs shrink-0">{i+1}</span>
+            {g.title}
+          </h3>
+          <p className="text-sm text-zinc-500 leading-relaxed pl-9">{g.content}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
 // --- Main App ---
 
 export default function App() {
@@ -627,9 +738,14 @@ export default function App() {
       case 'products': return <ProductsPage />;
       case 'dining': return <DiningPage />;
       case 'complaint': return <ComplaintPage onBack={() => setActiveTab('home')} />;
+      case 'encyclopedia': return <EncyclopediaPage onBack={() => setActiveTab('home')} />;
+      case 'medical': return <MedicalRescuePage onBack={() => setActiveTab('home')} />;
+      case 'guide': return <BookingGuidePage onBack={() => setActiveTab('home')} />;
       default: return <HomePage setTab={setActiveTab} />;
     }
   };
+
+  const showNav = !['complaint', 'encyclopedia', 'medical', 'guide'].includes(activeTab);
 
   return (
     <div className="min-h-screen bg-zinc-50 font-sans text-zinc-900 max-w-md mx-auto shadow-xl">
@@ -638,7 +754,7 @@ export default function App() {
       </main>
 
       {/* Bottom Navigation */}
-      {activeTab !== 'complaint' && (
+      {showNav && (
         <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/80 backdrop-blur-lg border-t border-zinc-100 flex justify-around items-center px-2 py-1 z-40">
           <TabButton 
             active={activeTab === 'home'} 
