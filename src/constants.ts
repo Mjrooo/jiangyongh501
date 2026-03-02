@@ -1,4 +1,4 @@
-import { ScenicSpot, Route, Product, Restaurant } from './types';
+import { ScenicSpot, Route, Product, Restaurant, Order } from './types';
 
 export const SCENIC_SPOTS: ScenicSpot[] = [
   {
@@ -338,5 +338,68 @@ export const GUIDES = [
   { title: "如何预订景区门票？", content: "在“产品”页面选择心仪的景区，点击“立即预订”，填写信息并支付后即可获得消费码。" },
   { title: "餐饮预订流程", content: "进入“餐饮”页面，选择餐厅，查看菜单后点击“立即订购”。到店出示消费码即可。" },
   { title: "交通快线预约说明", content: "拨打首页底部的预约电话 0746-8888888，告知出发地和目的地即可预约。" }
+];
+
+export const MOCK_ORDERS: Order[] = [
+  {
+    id: 'ORD001',
+    productName: '女书书法体验',
+    merchantName: '女书生态博物馆',
+    merchantAddress: '江永县浦尾村（上华村）',
+    merchantLocation: { lat: 25.2683, lng: 111.2734 },
+    price: 58,
+    date: '2024-03-01 10:30',
+    status: 'pending',
+    code: 'NS882910',
+    image: 'https://picsum.photos/seed/nushu/400/300'
+  },
+  {
+    id: 'ORD002',
+    productName: '瑶家腊肉双人餐',
+    merchantName: '瑶家大院',
+    merchantAddress: '江永县永明东路123号',
+    merchantLocation: { lat: 25.2712, lng: 111.3456 },
+    price: 128,
+    date: '2024-02-28 18:45',
+    status: 'used',
+    code: 'YJ773612',
+    image: 'https://picsum.photos/seed/res1/400/300'
+  },
+  {
+    id: 'ORD003',
+    productName: '江永香柚采摘券',
+    merchantName: '香柚示范园',
+    merchantAddress: '江永县粗石江镇',
+    merchantLocation: { lat: 25.1234, lng: 111.4567 },
+    price: 25,
+    date: '2024-02-25 14:20',
+    status: 'used',
+    code: 'XY552109',
+    image: 'https://picsum.photos/seed/pomelo/400/300'
+  },
+  {
+    id: 'ORD004',
+    productName: '古村导览服务',
+    merchantName: '上甘棠游客中心',
+    merchantAddress: '江永县夏层铺镇上甘棠村',
+    merchantLocation: { lat: 25.2156, lng: 111.2345 },
+    price: 40,
+    date: '2024-02-20 09:15',
+    status: 'expired',
+    code: 'SG221098',
+    image: 'https://picsum.photos/seed/shanggangtang/400/300'
+  },
+  {
+    id: 'ORD005',
+    productName: '地道米粉早餐',
+    merchantName: '永明小吃店',
+    merchantAddress: '江永县老城区步行街中段',
+    merchantLocation: { lat: 25.2756, lng: 111.3412 },
+    price: 12,
+    date: '2024-02-15 08:00',
+    status: 'used',
+    code: 'YM110293',
+    image: 'https://picsum.photos/seed/res2/400/300'
+  }
 ];
 

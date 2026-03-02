@@ -38,3 +38,16 @@ export interface Restaurant {
   stock: number;
   details?: string;
 }
+
+export interface Order {
+  id: string;
+  productName: string;
+  merchantName: string;
+  merchantAddress: string;
+  merchantLocation: { lat: number; lng: number };
+  price: number;
+  date: string;
+  status: 'pending' | 'used' | 'expired';
+  code: string;
+  image: string;
+}

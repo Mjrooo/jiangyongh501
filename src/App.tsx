@@ -15,10 +15,14 @@ import {
   Car,
   Video,
   X,
-  Star
+  Star,
+  User,
+  CreditCard,
+  Settings,
+  MapPin
 } from 'lucide-react';
-import { SCENIC_SPOTS, ROUTES, PRODUCTS, RESTAURANTS, ENCYCLOPEDIA, GUIDES, HISTORY_MODULE } from './constants';
-import { ScenicSpot, Route, Product, Restaurant } from './types';
+import { SCENIC_SPOTS, ROUTES, PRODUCTS, RESTAURANTS, ENCYCLOPEDIA, GUIDES, HISTORY_MODULE, MOCK_ORDERS } from './constants';
+import { ScenicSpot, Route, Product, Restaurant, Order } from './types';
 
 // --- Components ---
 
@@ -885,6 +889,243 @@ const HistoryPage = ({ onBack }: { onBack: () => void }) => (
   </div>
 );
 
+const UserPage = () => {
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [showMap, setShowMap] = useState(false);
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending': return 'text-amber-600 bg-amber-50';
+      case 'used': return 'text-emerald-600 bg-emerald-50';
+      case 'expired': return 'text-zinc-400 bg-zinc-50';
+      default: return 'text-zinc-600 bg-zinc-50';
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'pending': return '待使用';
+      case 'used': return '已使用';
+      case 'expired': return '已过期';
+      default: return status;
+    }
+  };
+
+  return (
+    <div className="pb-24 bg-zinc-50 min-h-screen">
+      {/* Profile Header */}
+      <div className="bg-emerald-600 p-8 pt-12 text-white rounded-b-[3rem] shadow-lg shadow-emerald-600/20">
+        <div className="flex items-center gap-4">
+          <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md border-4 border-white/30 flex items-center justify-center overflow-hidden">
+            <User size={40} className="text-white" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold">江永游客</h2>
+            <p className="text-sm opacity-80">strive901211@gmail.com</p>
+          </div>
+        </div>
+        <div className="mt-8 grid grid-cols-3 gap-4 text-center">
+          <div>
+            <div className="text-xl font-bold">12</div>
+            <div className="text-[10px] opacity-70 uppercase tracking-widest">收藏</div>
+          </div>
+          <div className="border-x border-white/10">
+            <div className="text-xl font-bold">5</div>
+            <div className="text-[10px] opacity-70 uppercase tracking-widest">订单</div>
+          </div>
+          <div>
+            <div className="text-xl font-bold">280</div>
+            <div className="text-[10px] opacity-70 uppercase tracking-widest">积分</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Order Management */}
+      <div className="px-5 mt-8">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-bold text-lg flex items-center gap-2">
+            <CreditCard size={20} className="text-emerald-600" />
+            我的订单
+          </h3>
+          <span className="text-xs text-zinc-400">全部订单</span>
+        </div>
+        
+        <div className="space-y-4">
+          {MOCK_ORDERS.map(order => (
+            <div 
+              key={order.id} 
+              onClick={() => setSelectedOrder(order)}
+              className="bg-white p-4 rounded-3xl border border-zinc-100 shadow-sm flex gap-4 cursor-pointer active:scale-[0.98] transition-transform"
+            >
+              <img src={order.image} alt={order.productName} className="w-20 h-20 rounded-2xl object-cover" referrerPolicy="no-referrer" />
+              <div className="flex-1 flex flex-col justify-between">
+                <div>
+                  <div className="flex justify-between items-start">
+                    <h4 className="font-bold text-sm text-zinc-900">{order.productName}</h4>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${getStatusColor(order.status)}`}>
+                      {getStatusText(order.status)}
+                    </span>
+                  </div>
+                  <div className="text-[10px] text-zinc-400 mt-1">{order.merchantName}</div>
+                </div>
+                <div className="flex justify-between items-end">
+                  <span className="text-xs text-zinc-400 font-mono">{order.date}</span>
+                  <span className="font-bold text-rose-500">¥{order.price}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Settings List */}
+      <div className="px-5 mt-8 space-y-3">
+        {[
+          { icon: Star, label: '我的收藏', color: 'text-amber-500' },
+          { icon: MapPin, label: '常用地址', color: 'text-blue-500' },
+          { icon: Settings, label: '设置', color: 'text-zinc-400' },
+        ].map((item, i) => (
+          <button key={i} className="w-full bg-white p-4 rounded-2xl border border-zinc-100 flex items-center justify-between group">
+            <div className="flex items-center gap-3">
+              <item.icon size={18} className={item.color} />
+              <span className="text-sm font-medium text-zinc-700">{item.label}</span>
+            </div>
+            <ChevronRight size={16} className="text-zinc-300 group-hover:translate-x-1 transition-transform" />
+          </button>
+        ))}
+      </div>
+
+      {/* Order Detail Modal */}
+      <AnimatePresence>
+        {selectedOrder && (
+          <motion.div 
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            className="fixed inset-0 z-50 bg-white overflow-y-auto"
+          >
+            <div className="p-6 pt-12">
+              <button 
+                onClick={() => setSelectedOrder(null)}
+                className="mb-8 p-2 bg-zinc-100 rounded-full"
+              >
+                <X size={20} />
+              </button>
+              
+              <div className="flex items-center gap-4 mb-8">
+                <img src={selectedOrder.image} alt={selectedOrder.productName} className="w-24 h-24 rounded-3xl object-cover shadow-md" referrerPolicy="no-referrer" />
+                <div>
+                  <div className={`inline-block text-[10px] px-2 py-0.5 rounded-full font-bold mb-2 ${getStatusColor(selectedOrder.status)}`}>
+                    {getStatusText(selectedOrder.status)}
+                  </div>
+                  <h2 className="text-xl font-bold">{selectedOrder.productName}</h2>
+                  <p className="text-sm text-zinc-400 font-mono mt-1">订单号: {selectedOrder.id}</p>
+                </div>
+              </div>
+
+              <div className="bg-zinc-50 rounded-[2rem] p-6 space-y-6">
+                <div>
+                  <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-4">消费凭证</h3>
+                  <div className="bg-white p-6 rounded-2xl text-center border border-zinc-100">
+                    <div className="text-3xl font-mono font-bold tracking-[0.2em] text-zinc-800 mb-2">
+                      {selectedOrder.code}
+                    </div>
+                    <p className="text-[10px] text-zinc-400">请向商户出示此核销码</p>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-4">商户信息</h3>
+                  <div 
+                    onClick={() => setShowMap(true)}
+                    className="bg-white p-5 rounded-2xl border border-zinc-100 flex items-center justify-between cursor-pointer hover:bg-zinc-50 transition-colors group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
+                        <MapPin size={20} />
+                      </div>
+                      <div>
+                        <div className="font-bold text-sm">{selectedOrder.merchantName}</div>
+                        <div className="text-xs text-zinc-400 mt-0.5">{selectedOrder.merchantAddress}</div>
+                      </div>
+                    </div>
+                    <ChevronRight size={16} className="text-zinc-300 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center pt-4 border-t border-zinc-200">
+                  <span className="text-sm text-zinc-500">实付金额</span>
+                  <span className="text-2xl font-bold text-rose-500">¥{selectedOrder.price}</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Simple Map Modal */}
+      <AnimatePresence>
+        {showMap && selectedOrder && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-md flex items-center justify-center p-6"
+          >
+            <div className="bg-white w-full max-w-sm rounded-[2.5rem] overflow-hidden shadow-2xl">
+              <div className="p-6 flex justify-between items-center border-b border-zinc-100">
+                <h3 className="font-bold">商户位置</h3>
+                <button onClick={() => setShowMap(false)} className="p-2 bg-zinc-100 rounded-full"><X size={16} /></button>
+              </div>
+              <div className="h-80 bg-zinc-200 relative flex items-center justify-center overflow-hidden">
+                {/* Mock Map Background */}
+                <img 
+                  src={`https://picsum.photos/seed/${selectedOrder.merchantName}/600/600`} 
+                  className="absolute inset-0 w-full h-full object-cover opacity-50 grayscale"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute inset-0 bg-emerald-500/10" />
+                
+                {/* Map Grid Lines */}
+                <div className="absolute inset-0 grid grid-cols-6 grid-rows-8 opacity-20">
+                  {Array.from({ length: 48 }).map((_, i) => (
+                    <div key={i} className="border border-zinc-400" />
+                  ))}
+                </div>
+
+                {/* Marker */}
+                <div className="relative z-10 flex flex-col items-center">
+                  <div className="bg-emerald-600 text-white p-3 rounded-full shadow-xl animate-bounce">
+                    <MapPin size={24} />
+                  </div>
+                  <div className="mt-2 bg-white px-3 py-1.5 rounded-xl shadow-lg border border-zinc-100">
+                    <div className="text-[10px] font-bold text-zinc-900">{selectedOrder.merchantName}</div>
+                  </div>
+                </div>
+
+                {/* Coordinates Label */}
+                <div className="absolute bottom-4 left-4 bg-black/50 backdrop-blur-md text-white text-[8px] px-2 py-1 rounded-md font-mono">
+                  LAT: {selectedOrder.merchantLocation.lat} LNG: {selectedOrder.merchantLocation.lng}
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="text-sm font-bold mb-1">{selectedOrder.merchantName}</div>
+                <div className="text-xs text-zinc-500 mb-6">{selectedOrder.merchantAddress}</div>
+                <button 
+                  onClick={() => setShowMap(false)}
+                  className="w-full bg-zinc-900 text-white py-4 rounded-2xl font-bold"
+                >
+                  开始导航
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
 // --- Main App ---
 
 export default function App() {
@@ -896,6 +1137,7 @@ export default function App() {
       case 'explore': return <ExplorePage />;
       case 'products': return <ProductsPage />;
       case 'dining': return <DiningPage />;
+      case 'user': return <UserPage />;
       case 'complaint': return <ComplaintPage onBack={() => setActiveTab('home')} />;
       case 'encyclopedia': return <EncyclopediaPage onBack={() => setActiveTab('home')} />;
       case 'medical': return <MedicalRescuePage onBack={() => setActiveTab('home')} />;
@@ -939,6 +1181,12 @@ export default function App() {
             icon={Utensils} 
             label="餐饮" 
             onClick={() => setActiveTab('dining')} 
+          />
+          <TabButton 
+            active={activeTab === 'user'} 
+            icon={User} 
+            label="我的" 
+            onClick={() => setActiveTab('user')} 
           />
         </nav>
       )}
