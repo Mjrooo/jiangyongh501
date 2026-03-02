@@ -24,6 +24,7 @@ export interface Product {
   price: number;
   type: 'experience' | 'food';
   schedule?: string;
+  details?: string;
 }
 
 export interface Restaurant {
@@ -35,4 +36,5 @@ export interface Restaurant {
   rating: number;
   menu: { name: string; price: number }[];
   stock: number;
+  details?: string;
 }

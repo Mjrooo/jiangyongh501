@@ -385,6 +385,13 @@ const ExplorePage = () => {
 
 const ProductsPage = () => {
   const [filter, setFilter] = useState<'experience' | 'food'>('experience');
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [orderSuccess, setOrderSuccess] = useState<string | null>(null);
+
+  const handleBooking = (product: Product) => {
+    const mockCode = Math.random().toString(36).substring(2, 10).toUpperCase();
+    setOrderSuccess(mockCode);
+  };
 
   return (
     <div className="pb-20">
@@ -407,8 +414,12 @@ const ProductsPage = () => {
 
       <div className="p-4 grid grid-cols-1 gap-4">
         {PRODUCTS.filter(p => p.type === filter).map(product => (
-          <div key={product.id} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-zinc-100 flex h-32">
-            <img src={product.image} alt={product.name} className="w-32 h-full object-cover" referrerPolicy="no-referrer" />
+          <div 
+            key={product.id} 
+            onClick={() => setSelectedProduct(product)}
+            className="bg-white rounded-2xl overflow-hidden shadow-sm border border-zinc-100 flex h-32 cursor-pointer group"
+          >
+            <img src={product.image} alt={product.name} className="w-32 h-full object-cover group-hover:scale-105 transition-transform duration-500" referrerPolicy="no-referrer" />
             <div className="flex-1 p-3 flex flex-col justify-between">
               <div>
                 <h4 className="font-bold text-zinc-900">{product.name}</h4>
@@ -419,12 +430,80 @@ const ProductsPage = () => {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-rose-500 font-bold">¥{product.price}</span>
-                <button className="bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-full font-medium">立即预订</button>
+                <span className="text-[10px] text-zinc-400 font-medium">查看详情</span>
               </div>
             </div>
           </div>
         ))}
       </div>
+
+      {/* Product Detail Modal */}
+      <AnimatePresence>
+        {selectedProduct && (
+          <motion.div 
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            className="fixed inset-0 z-50 bg-white overflow-y-auto"
+          >
+            <div className="relative h-72">
+              <img src={selectedProduct.image} alt={selectedProduct.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+              <button 
+                onClick={() => setSelectedProduct(null)}
+                className="absolute top-6 left-6 bg-black/20 backdrop-blur-md text-white p-2 rounded-full"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="p-8 pb-32">
+              <div className="flex justify-between items-start mb-4">
+                <h2 className="text-2xl font-bold">{selectedProduct.name}</h2>
+                <div className="text-2xl font-bold text-rose-500">¥{selectedProduct.price}</div>
+              </div>
+              <div className="prose prose-sm text-zinc-600 leading-relaxed">
+                <p className="whitespace-pre-wrap">{selectedProduct.details || '暂无详细介绍。'}</p>
+              </div>
+            </div>
+            <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-zinc-100 max-w-md mx-auto">
+              <button 
+                onClick={() => handleBooking(selectedProduct)}
+                className="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-emerald-600/20"
+              >
+                立即预订
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Success Modal */}
+      <AnimatePresence>
+        {orderSuccess && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-6"
+          >
+            <div className="bg-white rounded-3xl p-8 w-full max-w-xs text-center">
+              <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <ShoppingBag size={32} />
+              </div>
+              <h3 className="text-xl font-bold mb-2">预订成功</h3>
+              <p className="text-sm text-zinc-500 mb-6">请凭此消费码到现场使用</p>
+              <div className="bg-zinc-100 p-4 rounded-2xl font-mono text-2xl font-bold tracking-widest text-zinc-800 mb-6">
+                {orderSuccess}
+              </div>
+              <button 
+                onClick={() => setOrderSuccess(null)}
+                className="w-full py-3 bg-zinc-900 text-white rounded-xl font-bold"
+              >
+                确定
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
@@ -486,7 +565,7 @@ const DiningPage = () => {
                 <X size={20} />
               </button>
             </div>
-            <div className="p-6">
+            <div className="p-6 pb-32">
               <h2 className="text-2xl font-bold">{selectedRes.name}</h2>
               <div className="flex items-center gap-4 mt-2 text-sm text-zinc-500">
                 <span className="flex items-center gap-1 text-amber-500 font-bold">
@@ -494,6 +573,10 @@ const DiningPage = () => {
                 </span>
                 <span>{selectedRes.priceRange}</span>
                 <span className="text-emerald-600">库存: {selectedRes.stock}</span>
+              </div>
+
+              <div className="mt-8 prose prose-sm text-zinc-600 leading-relaxed">
+                <p className="whitespace-pre-wrap">{selectedRes.details || '暂无详细介绍。'}</p>
               </div>
               
               <div className="mt-8">
